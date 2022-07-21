@@ -1,0 +1,114 @@
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <math.h>
+using namespace std;
+
+const double SALES_TAX_RATE = 0.10;             // Declaring the Rate of Sales Tax
+const double IMPORT_DUTY_RATE = 0.05;           //Declaring the Rate of Import Duty
+
+// Creating Structure To Store Input Values
+struct Input
+{
+    int Quantity;
+    string Product;
+    float Cost;
+};
+
+float ComputeSTax(int n, float Price, float SRate, float IRate)         //Function to calculate Sales Tax
+{
+   float Stax = n * ((Price * SRate) + (Price * IRate));
+   return round(Stax * 20) / 20.0;
+}
+
+int main()
+{
+    cout << "Enter Quantity as 0 at end of list \n";
+    Input record[1000];                             //Declaring array of structues for storing multiple product details
+    int count = 0;
+    for(int i=0; i>=0; i++)
+    {
+        cout << "\nEnter number of quantity - ";
+        cin >> record[i].Quantity;
+        cin.ignore(1);
+        if (record[i].Quantity==0)
+            break; 
+        cout << "Enter Product Name - ";
+        getline(cin,record[i].Product);
+        for(int j=0; j<record[i].Product.length(); j++)
+  		    record[i].Product[j] = tolower(record[i].Product[j]);
+        cout << "Enter Cost Price - ";
+        cin >> record[i].Cost;
+        count++;
+    }
+
+    float salestax = 0.0;   
+    int choice;
+    float Total = 0;
+    float Ttax = 0;
+
+    for (int i = 0; i<count; i++)                                       //To determine and apply sales tax and import tax for applicable goods
+    {
+        float subtotal = 0.0;
+        float totaltax = 0.0;
+        if (record[i].Product == "book")
+	        choice = 1;
+	    else if (record[i].Product == "music cd")
+	        choice = 3;
+	    else if (record[i].Product == "chocolate bar")
+	        choice = 1;
+	    else if (record[i].Product == "imported box of chocolates")
+	        choice = 2;
+	    else if (record[i].Product == "imported bottle of perfume")
+            choice = 4;
+	    else if(record[i].Product == "bottle of perfume")
+	        choice = 3;
+	    else if(record[i].Product == "packet of headache pills")
+	        choice = 1;
+	    else if(record[i].Product == "box of imported chocolates")
+	        choice = 2;
+	    else
+            cout <<"New Product Not Found!"<< endl;
+        
+        switch(choice)
+        {
+    		case 1:                                                                     //ITEM_WITH_NOSALESTAX_AND_NOIMPORTDUTY
+       		    salestax = ComputeSTax(record[i].Quantity,record[i].Cost,0.0,0.0);
+       	  	    totaltax = totaltax + salestax;
+       	 	    record[i].Cost = record[i].Cost + salestax;
+        	    subtotal = subtotal + record[i].Cost;
+    		break;
+                
+            case 2:                                                                     //ITEM_WITH_NOSALESTAX_ONLY_IMPORTDUTY
+                salestax = ComputeSTax(record[i].Quantity,record[i].Cost,0.0,IMPORT_DUTY_RATE);
+       	  	    totaltax = totaltax + salestax;
+       	 	    record[i].Cost = record[i].Cost + salestax;
+        	    subtotal = subtotal + record[i].Cost;
+    		break;
+
+		    case 3:                                                                     //ITEM_WITH_SALESTAX_AND_NOIMPORTDUTY
+                salestax = ComputeSTax(record[i].Quantity,record[i].Cost,SALES_TAX_RATE,0.0);
+       	  	    totaltax = totaltax + salestax;
+       	 	    record[i].Cost = record[i].Cost + salestax;
+        	    subtotal = subtotal + record[i].Cost;
+    		break;
+
+		    case 4:                                                                     //ITEM_WITH_SALESTAX_AND_IMPORTDUTY
+                salestax = ComputeSTax(record[i].Quantity,record[i].Cost,SALES_TAX_RATE,IMPORT_DUTY_RATE);
+       	  	    totaltax = totaltax + salestax;
+       	 	    record[i].Cost = record[i].Cost + salestax;
+        	    subtotal = subtotal + record[i].Cost;
+    		break;
+		
+		    default:
+		        cout << "\n";
+        }
+
+        cout << record[i].Quantity << " " << record[i].Product << " :" << record[i].Cost << endl;       //Printing product information with updated price
+        Total =  Total + subtotal;
+        Ttax = Ttax + totaltax;
+    }
+    cout << "Sales Taxes :" << Ttax << endl;
+    cout << "Total :" << Total << endl << endl;
+    return 0;
+}
